@@ -5,6 +5,8 @@
 #include <utility>
 #include <queue>
 #include <vector>  // NOT using namespace std lolll
+#include <iostream>
+#pragma once
 
 #ifndef AVLTREE_AVL_H
 #define AVLTREE_AVL_H
@@ -17,7 +19,7 @@ class AVLTree {   //node is a private member of avl class  --
         std::string id;
         std::string name;
         int height;
-        Node(std::string _id, std::string _name): id(std::move(_id)), name(std::move(_name)), height(1), left(nullptr), right(nullptr) {}
+        Node(std::string _id, std::string _name): left(nullptr), right(nullptr), id(std::move(_id)), name(std::move(_name)), height(1) {}
     };
 public:              //functions that are used in main, as simple as these functinos can get
     AVLTree();
@@ -26,7 +28,7 @@ public:              //functions that are used in main, as simple as these funct
     void remove_inorder_N(int n);
     void search_id(const std::string& id);
     void search_name(const std::string& name);
-    void print_inorder();
+    std::vector<std::string> print_inorder();
     void print_postorder();
     void print_preorder();
     int get_level_count();
@@ -105,14 +107,15 @@ void AVLTree::search_name(const std::string &name) {
     if (!done) std::cout << "unsuccessful" << std::endl;
 }
 
-void AVLTree::print_inorder() {
+std::vector<std::string> AVLTree::print_inorder() {
     std::vector<std::string> inorderIDs;
     print_inorder_helper(root, inorderIDs);
-    for (int i = 0; i < inorderIDs.size(); i++) {
+    for (unsigned int i = 0; i < inorderIDs.size(); i++) {
         std::cout << inorderIDs[i];
         if (i != inorderIDs.size()-1) std::cout << ", ";
     }
     std::cout << std::endl;
+    return inorderIDs;
 }
 
 void AVLTree::print_inorder_helper(AVLTree::Node *node, std::vector<std::string> &inorderIDs) {
@@ -129,7 +132,7 @@ void AVLTree::print_inorder_helper(AVLTree::Node *node, std::vector<std::string>
 void AVLTree::print_postorder() {
     std::vector<std::string> postorderIDs;
     print_postorder_helper(root, postorderIDs);
-    for (int i = 0; i < postorderIDs.size(); i++) {
+    for (unsigned int i = 0; i < postorderIDs.size(); i++) {
         std::cout << postorderIDs[i];
         if (i != postorderIDs.size()-1) std::cout << ", ";
     }
@@ -150,7 +153,7 @@ void AVLTree::print_postorder_helper(AVLTree::Node *node, std::vector<std::strin
 void AVLTree::print_preorder() {
     std::vector<std::string> preorderIDs;
     print_preorder_helper(root, preorderIDs);
-    for (int i = 0; i < preorderIDs.size(); i++) {
+    for (unsigned int i = 0; i < preorderIDs.size(); i++) {
         std::cout << preorderIDs[i];
         if (i != preorderIDs.size()-1) std::cout << ", ";
     }
@@ -302,7 +305,9 @@ AVLTree::Node *AVLTree::remove_helper(AVLTree::Node *node, const std::string &id
 }
 
 AVLTree::Node *AVLTree::min_value(AVLTree::Node *subtreeRoot) {
-    for(subtreeRoot; subtreeRoot->left != nullptr; subtreeRoot = subtreeRoot->left) continue;
+    while (subtreeRoot->left != nullptr) {
+        subtreeRoot = subtreeRoot->left;
+    }
     return subtreeRoot;
 }
 
@@ -332,6 +337,37 @@ AVLTree::Node *AVLTree::remove_inorder_N_helper(AVLTree::Node *node, int &n, con
     }
     n++;
     remove_inorder_N_helper(node->right, n, removedN, done);
+    return nullptr;
 }
 
 #endif //AVLTREE_AVL_H
+
+bool is_valid_id(const std::string &s) {
+    if (s.size() != 8)
+        return false;
+
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}        //some helper functions to clean up main and validate possible ids and numbesr and such
+
+bool is_number(const std::string &s) {
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}
+
+bool is_valid_name(const std::string &s) {
+    if (s[0] != '"')
+        return false;
+    if (s[s.size()-1] != '"')
+        return false;
+    std::string temp = s.substr(1, s.size()-2);
+    std::string::const_iterator it = temp.begin();
+    while (it != temp.end() && (std::isalpha(*it) or std::isspace(*it) or *it == ' ')) ++it;
+    return !temp.empty() && it == temp.end();
+}
+
+std::string remove_quotes(const std::string &s) {
+    return s.substr(1, s.size()-2);
+}

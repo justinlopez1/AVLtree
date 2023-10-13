@@ -1,39 +1,8 @@
 #include <iostream>
-#include <string>
-#include <sstream>   //we have to leave comments??? why
+#include <string>            //we have to leave comments??? why
 #include "AVL.h"   //test
 
-bool is_valid_id(const std::string &s) {
-    if (s.size() != 8)
-        return false;
-
-    std::string::const_iterator it = s.begin();
-    while (it != s.end() && std::isdigit(*it)) ++it;
-    return !s.empty() && it == s.end();
-}        //some helper functions to clean up main and validate possible ids and numbesr and such
-
-bool is_number(const std::string &s) {
-    std::string::const_iterator it = s.begin();
-    while (it != s.end() && std::isdigit(*it)) ++it;
-    return !s.empty() && it == s.end();
-}
-
-bool is_valid_name(const std::string &s) {
-    if (s[0] != '"')
-        return false;
-    if (s[s.size()-1] != '"')
-        return false;
-    std::string temp = s.substr(1, s.size()-2);
-    std::string::const_iterator it = temp.begin();
-    while (it != temp.end() && (std::isalpha(*it) or std::isspace(*it) or *it == ' ')) ++it;
-    return !temp.empty() && it == temp.end();
-}
-
-std::string remove_quotes(const std::string &s) {
-    return s.substr(1, s.size()-2);
-}
-
-int main(int argc, char* argv[]) {
+int main() {
 
     AVLTree tree; //tree object
 
@@ -53,7 +22,7 @@ int main(int argc, char* argv[]) {
         if (temp.find('"') != std::string::npos) {
             std::string x = temp.substr(1);
             //std::cout << x << std::endl;
-            int pos = x.find('"');
+            int pos = (int)x.find('"');
             two = temp.substr(0,pos+2);
             temp = temp.substr(pos+2);
 
@@ -120,6 +89,9 @@ int main(int argc, char* argv[]) {
         else if (one == "removeInorder") {
             if (is_number(two)) tree.remove_inorder_N(stoi(two));
             else std::cout << "unsuccessful" << std::endl;
+        }
+        else {
+            std::cout << "unsuccessful" << std::endl;
         }
     }
 

@@ -1,0 +1,6 @@
+.idea
+build
+cmake-build-debug
+test-io
+test-unit
+CMakeLists.txt
